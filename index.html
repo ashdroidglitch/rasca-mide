@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beneficios MIDE + | Atracción Educativa</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Verdana Pro', Verdana, sans-serif; 
+    }
+
+    body {
+      background-color: #F1EAD3; 
+      background-image: url('fondo.jpg'); 
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      user-select: none;
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .custom-logo {
+      max-width: 280px; 
+      height: auto;
+      margin-bottom: 10px;
+      object-fit: contain;
+    }
+
+    /* --- CAMBIO 1: Tipografía sans-serif (Verdana Pro) --- */
+    .mide-identifier {
+      color: #652F6C;
+      font-size: 26px; 
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-family: 'Verdana Pro', Verdana, sans-serif; 
+    }
+
+    .mide-identifier span {
+      color: #652F6C; 
+      font-weight: 900;
+    }
+
+    .group-selector {
+      margin-bottom: 20px;
+      text-align: center;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .group-selector label {
+      display: none; 
+    }
+
+    .group-selector select {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: none; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+      background: #fff;
+      font-size: 14px;
+      font-weight: bold;
+      color: #101D1D;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    
+    .group-selector select:focus {
+      box-shadow: 0 0 0 3px rgba(101, 47, 108, 0.2);
+    }
+
+    /* --- CAMBIO 2: Intentar forzar el color lila sobre el azul nativo --- */
+    .group-selector select option {
+      background-color: #ffffff;
+      color: #101D1D;
+    }
+
+    .group-selector select option:checked {
+      background: #D9B0E2 linear-gradient(0deg, #D9B0E2 0%, #D9B0E2 100%) !important;
+      background-color: #D9B0E2 !important;
+      color: #000 !important;
+    }
+    
+    .group-selector select option:hover,
+    .group-selector select option:focus {
+      background-color: #D9B0E2 !important;
+      box-shadow: 0 0 10px 100px #D9B0E2 inset !important;
+      color: #000 !important;
+    }
+
+    .card-container {
+      position: relative;
+      width: 340px;
+      height: 300px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(51, 51, 52, 0.2);
+      background-color: #ddd; 
+      border: none; 
+      --pos: 50%;
+    }
+
+    .panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .panel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 1 !important; 
+    }
+
+    .left-panel {
+      clip-path: polygon(0 0, var(--pos) 0, var(--pos) 100%, 0 100%);
+      z-index: 2;
+    }
+
+    .right-panel {
+      z-index: 1;
+    }
+
+    .floating-text {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 13px;
+      font-weight: 900;
+      color: #fff;
+      background: rgba(101, 47, 108, 0.85);
+      padding: 8px 14px;
+      border-radius: 12px; 
+      pointer-events: none;
+      z-index: 3;
+      transition: opacity 0.3s ease;
+      text-align: center; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+
+    .text-left { left: 25%; }
+    .text-right { left: 75%; }
+
+    .slider-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--pos);
+      width: 4px;
+      background: #FFFFFF;
+      z-index: 4;
+      transform: translateX(-50%);
+      pointer-events: none;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .slider-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 32px;
+      height: 32px;
+      background: #FFFFFF;
+      border: 3px solid #652F6C;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #652F6C;
+      font-weight: bold;
+      font-size: 18px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .slider-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: ew-resize;
+      z-index: 5;
+      display: none; 
+    }
+
+    #scratch-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      touch-action: none;
+      transition: opacity 0.5s ease-out;
+      cursor: url('moneda.jpg') 16 16, auto;
+    }
+
+    .final-phrase {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #652F6C;
+      font-weight: 800;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      text-align: center;
+    }
+
+    .final-phrase.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast-message {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background-color: #652F6C;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 1000;
+    }
+    .toast-message.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .stars-container {
+      position: fixed; 
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999; 
+      overflow: visible;
+    }
+    
+    .star {
+      position: absolute;
+      color: #FFD700;
+      animation: popStar 1.8s ease-out forwards; 
+    }
+    
+    @keyframes popStar {
+      0% { transform: scale(0) translate(0, 0); opacity: 1; }
+      100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <audio id="scratch-sound" src="sonido_rascar.mp3" preload="auto" loop></audio>
+
+  <div class="brand-header">
+    <div class="mide-identifier">POR QUE TU VISITA</div>
+    <img src="logo.png" alt="MIDE +" class="custom-logo">
+  </div>
+
+  <div class="group-selector">
+    <select id="student-count">
+      <option value="" disabled selected>Selecciona grupo</option>
+      <option value="tier1">80 - 120 alumnos</option>
+      <option value="tier2">121 - 200 alumnos</option>
+      <option value="tier3">201 - 300 alumnos</option>
+      <option value="tier4">301 - 400 alumnos</option>
+    </select>
+  </div>
+
+  <div class="card-container" id="card-container">
+    
+    <div class="panel left-panel">
+      <img id="img-visita" src="" alt="Beneficios durante la visita">
+    </div>
+    <div class="floating-text text-left" id="float-left">DURANTE LA<br>VISITA</div>
+
+    <div class="panel right-panel">
+      <img id="img-post" src="" alt="Beneficios post-visita">
+    </div>
+    <div class="floating-text text-right" id="float-right">POST-VISITA</div>
+
+    <div class="slider-line">
+      <div class="slider-handle">↔</div>
+    </div>
+    <input type="range" min="0" max="100" value="50" class="slider-input" id="slider">
+
+    <canvas id="scratch-canvas" width="340" height="300"></canvas>
+  </div>
+
+  <p id="final-phrase" class="final-phrase">¡NO DEJES PASAR ESTOS BENEFICIOS!</p>
+
+  <div id="toast" class="toast-message">Selecciona un grupo</div>
+
+  <div id="stars-container" class="stars-container"></div>
+
+  <script>
+    const beneficiosImages = {
+      tier1: { visita: 'visita_t1.jpg', post: 'post_t1.jpg' },
+      tier2: { visita: 'visita_t2.jpg', post: 'post_t2.jpg' },
+      tier3: { visita: 'visita_t3.jpg', post: 'post_t3.jpg' },
+      tier4: { visita: 'visita_t4.jpg', post: 'post_t4.jpg' }
+    };
+
+    const selector = document.getElementById('student-count');
+    const imgVisita = document.getElementById('img-visita');
+    const imgPost = document.getElementById('img-post');
+    const slider = document.getElementById('slider');
+    const cardContainer = document.getElementById('card-container');
+    const floatLeft = document.getElementById('float-left');
+    const floatRight = document.getElementById('float-right');
+    const finalPhrase = document.getElementById('final-phrase');
+    const toast = document.getElementById('toast');
+    const scratchSound = document.getElementById('scratch-sound');
+    
+    const canvas = document.getElementById('scratch-canvas');
+    const ctx = canvas.getContext('2d');
+    let isMouseDown = false;
+    let isRevealed = false;
+    let lastPoint = null;
+    let toastTimeout;
+    let scratchSoundTimeout; 
+
+    const imgPortada = new Image();
+    imgPortada.src = 'imagen_portada.jpg';
+    
+    imgPortada.onload = () => {
+      ctx.drawImage(imgPortada, 0, 0, canvas.width, canvas.height);
+    };
+    
+    ctx.fillStyle = '#652F6C';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    selector.addEventListener('change', () => {
+      const selected = selector.value;
+      if (selected && beneficiosImages[selected]) {
+        imgVisita.src = beneficiosImages[selected].visita;
+        imgPost.src = beneficiosImages[selected].post;
+        slider.value = 50;
+        cardContainer.style.setProperty('--pos', '50%');
+        floatLeft.style.opacity = '1';
+        floatRight.style.opacity = '1';
+      }
+    });
+
+    function getCoordinates(e) {
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches ? e.touches[0] : e;
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (touch.clientX - rect.left) * scaleX,
+        y: (touch.clientY - rect.top) * scaleY
+      };
+    }
+
+    function showToast() {
+      clearTimeout(toastTimeout);
+      toast.classList.add('show');
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function checkScratchPermission() {
+      if (!selector.value) {
+        showToast();
+        isMouseDown = false;
+        return false;
+      }
+      return true;
+    }
+
+    function playScratchSound() {
+      if (scratchSound.paused && !isRevealed) {
+        scratchSound.play().catch(() => {});
+      }
+      
+      clearTimeout(scratchSoundTimeout);
+      scratchSoundTimeout = setTimeout(() => {
+        stopScratchSound();
+      }, 150);
+    }
+
+    function stopScratchSound() {
+      if (!scratchSound.paused) {
+        scratchSound.pause();
+      }
+    }
+
+    function scratch(e) {
+      if (!isMouseDown || isRevealed) return;
+      if (!checkScratchPermission()) return;
+
+      playScratchSound();
+
+      const currentPoint = getCoordinates(e);
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = 45; 
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.beginPath();
+      if (lastPoint) {
+        ctx.moveTo(lastPoint.x, lastPoint.y);
+      } else {
+        ctx.moveTo(currentPoint.x, currentPoint.y);
+      }
+      ctx.lineTo(currentPoint.x, currentPoint.y);
+      ctx.stroke();
+
+      lastPoint = currentPoint;
+      checkScratchPercentage();
+    }
+
+    function triggerStars() {
+      const container = document.getElementById('stars-container');
+      for (let i = 0; i < 40; i++) { 
+        const star = document.createElement('div');
+        star.innerHTML = '⭐';
+        star.className = 'star';
+        
+        const randomSize = Math.floor(Math.random() * 20) + 15; 
+        star.style.fontSize = randomSize + 'px';
+        
+        star.style.left = '50%';
+        star.style.top = '50%';
+        
+        const tx = (Math.random() - 0.5) * 560 + 'px'; 
+        const ty = (Math.random() - 0.5) * 560 + 'px';
+        
+        star.style.setProperty('--tx', tx);
+        star.style.setProperty('--ty', ty);
+        container.appendChild(star);
+      }
+      
+      setTimeout(() => { container.innerHTML = ''; }, 2000);
+    }
+
+    function checkScratchPercentage() {
+      if (isRevealed) return;
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+      
+      let centerTransparent = 0;
+      let borderTransparent = 0;
+
+      const centerXStart = Math.floor(canvas.width * 0.25);
+      const centerXEnd = Math.floor(canvas.width * 0.75);
+      const centerYStart = Math.floor(canvas.height * 0.25);
+      const centerYEnd = Math.floor(canvas.height * 0.75);
+
+      const centerTotal = (centerXEnd - centerXStart) * (centerYEnd - centerYStart);
+      const totalPixels = canvas.width * canvas.height;
+      const borderTotal = totalPixels - centerTotal;
+
+      for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < canvas.width; x++) {
+          const index = (y * canvas.width + x) * 4;
+          if (pixels[index + 3] === 0) { 
+            if (x >= centerXStart && x < centerXEnd && y >= centerYStart && y < centerYEnd) {
+              centerTransparent++;
+            } else {
+              borderTransparent++;
+            }
+          }
+        }
+      }
+
+      const centerPercentage = (centerTransparent / centerTotal) * 100;
+      
+      if (centerPercentage >= 70) {
+        isRevealed = true;
+        stopScratchSound();
+        triggerStars();
+        canvas.style.opacity = '0';
+        selector.disabled = true; 
+        
+        setTimeout(() => {
+          canvas.style.display = 'none';
+          slider.style.display = 'block'; 
+        }, 500);
+      }
+    }
+
+    window.addEventListener('mousedown', (e) => { 
+      if (e.target === canvas && checkScratchPermission()) { isMouseDown = true; lastPoint = null; }
+    });
+    window.addEventListener('touchstart', (e) => { 
+      if (e.target === canvas && checkScratchPermission()) { isMouseDown = true; lastPoint = null; }
+    }, {passive: true});
+    window.addEventListener('mousemove', (e) => {
+      if (isMouseDown && !isRevealed && e.target === canvas) scratch(e);
+    });
+    window.addEventListener('touchmove', (e) => {
+      if (isMouseDown && !isRevealed && e.target === canvas) { e.preventDefault(); scratch(e); }
+    }, {passive: false});
+    
+    const stopAction = () => { isMouseDown = false; lastPoint = null; stopScratchSound(); };
+    window.addEventListener('mouseup', stopAction);
+    window.addEventListener('touchend', stopAction);
+    window.addEventListener('mouseleave', stopAction);
+
+    slider.addEventListener('input', (e) => {
+      const valor = e.target.value;
+      cardContainer.style.setProperty('--pos', `${valor}%`);
+      
+      floatLeft.style.opacity = '0';
+      floatRight.style.opacity = '0';
+
+      if (valor <= 25 || valor >= 75) {
+        finalPhrase.classList.add('visible');
+      }
+    });
+  </script>
+</body>
+</html>
